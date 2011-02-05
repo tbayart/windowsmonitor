@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Monitor>
+  <Monitor type="predefined" value="CPU" />
+  <Monitor type="predefined" value="PhysicalMemory" />
+  <Monitor type="predefined" value="VirtualMemory" />
+  <Monitor type="predefined" value="Network" />
+  <Monitor type="predefined" value="Disk" />
+<!-- Examples
+    <Monitor value="\\.\Processeur(_Total)\% durée C1"/>
+    <Monitor value="\\.\Processeur(_Total)\% durée C2"/>
+    <Monitor value="\\.\Processeur(_Total)\% durée C3"/>
+    <Monitor value="\\.\Mémoire\% Octets dédiés utilisés"/>
+    <Monitor value="\\.\ProcessorPerformance(#ALL#)\#ALL#"/>
+    <Monitor value="\\.\Processeur(#ALL#)\Interruptions/s"/>
+    -->
+</Monitor>
