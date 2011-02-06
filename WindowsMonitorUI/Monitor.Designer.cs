@@ -35,9 +35,9 @@
             this.horizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,12 +91,6 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
-            // toolStripMenuItemExit
-            // 
-            this.toolStripMenuItemExit.Name = "toolStripMenuItemExit";
-            this.toolStripMenuItemExit.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItemExit.Text = "Quitter";
-            // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
@@ -107,6 +101,12 @@
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // toolStripMenuItemExit
+            // 
+            this.toolStripMenuItemExit.Name = "toolStripMenuItemExit";
+            this.toolStripMenuItemExit.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItemExit.Text = "Quitter";
             // 
             // Monitor
             // 
@@ -120,15 +120,15 @@
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Monitor";
-            this.Opacity = 0.9;
+            this.Opacity = 0.9D;
             this.ShowInTaskbar = false;
             this.Text = "System Monitor";
             this.TopMost = true;
             this.TransparencyKey = System.Drawing.SystemColors.Window;
             this.Load += new System.EventHandler(this.Monitor_Load);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Monitor_MouseUp);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Monitor_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Monitor_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Monitor_MouseUp);
             this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

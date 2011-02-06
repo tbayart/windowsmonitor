@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Configuration;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Net.NetworkInformation;
-using System.Management;
-using System.Configuration;
 using WindowsMonitorLib.Counters;
 
 namespace WindowsMonitorUI
@@ -25,6 +20,24 @@ namespace WindowsMonitorUI
         }
 
         private void Monitor_Load(object sender, EventArgs e)
+        {
+            InitializeCountersFromSettings();
+
+            // Automate refresh
+            timer1.Interval = RefreshMilliSecondsInterval;
+            timer1.Start();
+            timer1_Tick(null, null);
+
+            // Activate physical disk change detection
+            driveDetector = new Dolinay.DriveDetector();
+            driveDetector.DeviceArrived += new Dolinay.DriveDetectorEventHandler(driveDetector_DeviceArrived);
+            driveDetector.DeviceRemoved += new Dolinay.DriveDetectorEventHandler(driveDetector_DeviceRemoved);
+        }
+
+        /// <summary>
+        /// Build counters by reading settings file
+        /// </summary>
+        private void InitializeCountersFromSettings()
         {
             System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
             doc.Load(ConfigurationManager.AppSettings["settingsFile"]);
@@ -59,41 +72,9 @@ namespace WindowsMonitorUI
                 }
                 else
                 {
-                    string machineName, categoryName, instanceName, counterName;
-                    ParseCounterString(monitor.Attributes["value"].Value, out machineName, out categoryName, out instanceName, out counterName);
-                    CreateSpecific(machineName, categoryName, counterName, instanceName);
+                    CreateSpecific(monitor.Attributes["value"].Value);
                 }
             }
-
-            // Planification du rafraîchissement
-            timer1.Interval = RefreshMilliSecondsInterval;
-            timer1.Start();
-            timer1_Tick(null, null);
-
-            // Detection des changements de disques
-            driveDetector = new Dolinay.DriveDetector();
-            driveDetector.DeviceArrived += new Dolinay.DriveDetectorEventHandler(driveDetector_DeviceArrived);
-            driveDetector.DeviceRemoved += new Dolinay.DriveDetectorEventHandler(driveDetector_DeviceRemoved);
-        }
-
-        /// <summary>
-        /// Parsing de chaîne de compteur "\\<machineName>\<categoryName>(<instanceName>)\<counterName>"
-        /// </summary>
-        /// <param name="counterString"></param>
-        /// <param name="machineName">can be "."</param>
-        /// <param name="categoryName">can be empty if there is only one instance</param>
-        /// <param name="instanceName"></param>
-        /// <param name="counterName"></param>
-        private void ParseCounterString(string counterString, out string machineName, out string categoryName, out string instanceName, out string counterName)
-        {
-            string[] detail = counterString.Substring(2).Split('\\');
-            char[] separator = { '(', ')' };
-            string[] detail2 = detail[1].Split(separator);
-
-            machineName = detail[0];
-            categoryName = detail2[0];
-            counterName = detail[2];
-            instanceName = detail2.Length >= 2 ? detail2[1] : null;
         }
 
         /// <summary>
@@ -101,16 +82,12 @@ namespace WindowsMonitorUI
         /// </summary>
         private void CreateDisk()
         {
-            System.Diagnostics.PerformanceCounterCategory category = new System.Diagnostics.PerformanceCounterCategory("Disque physique");
-            foreach (string instance in category.GetInstanceNames().OrderBy(s => s))
+            foreach (SimpleCounter counter in WindowsMonitorLib.Counters.CounterFactory.CreatePhysicalDiskCounters())
             {
-                if (instance == "_Total") { continue; }
-
-                System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("Disque physique", "% durée d'inactivité", instance, true);
-                UserControlCounter userControlCounter = AddCounterControl(new ReversePerformanceCounter(new PerformanceCounter(pc), new StaticPerformanceCounter(100)),
+                AddCounterControl(counter,
                     Color.MediumOrchid,
                     "userControlCounterDisk",
-                    string.Format("Activité disque {0}", instance));
+                    string.Format("Disk activity {0}", counter.Name));
             }
 
 #if false
@@ -162,11 +139,10 @@ namespace WindowsMonitorUI
         /// </summary>
         private void CreatePhysicalMemory()
         {
-            System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("Mémoire", "Octets disponibles", null, true);
-            UserControlCounter userControlCounter = AddCounterControl(new ReversePerformanceCounter(new PerformanceCounter(pc), new MaxMemoryPerformanceCounter()),
+            UserControlCounter userControlCounter = AddCounterControl(CounterFactory.CreatePhysicalMemoryCounter(),
                 Color.RoyalBlue,
                 "userControlCounterPhysicalMemory",
-                "Mémoire physique");
+                "Physical Memory");
             userControlCounter.CounterHistory.Counter.DisplayCoef = 1F / 1024F / 1024F / 1024F;
             userControlCounter.CounterHistory.Counter.Unit = "Go";
         }
@@ -176,14 +152,11 @@ namespace WindowsMonitorUI
         /// </summary>
         private void CreateVirtualMemory()
         {
-            System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("Mémoire", "octets dédiés", null, true);
-            System.Diagnostics.PerformanceCounter pcMax = new System.Diagnostics.PerformanceCounter("Mémoire", "limite de mémoire dédiée", null, true);
-
             UserControlCounter userControlCounter = AddCounterControl(
-                new KnownMaxPerformanceCounter(new PerformanceCounter(pc), new PerformanceCounter(pcMax)),
+                CounterFactory.CreateVirtualMemoryCounter(),
                 Color.LimeGreen,
-                "userControlCounterPhysicalMemory",
-                "Mémoire virtuelle");
+                "userControlCounterVirtualMemory",
+                "Virtual Memory");
             userControlCounter.CounterHistory.Counter.DisplayCoef = 1F / 1024F / 1024F / 1024F;
             userControlCounter.CounterHistory.Counter.Unit = "Go";
         }
@@ -193,28 +166,7 @@ namespace WindowsMonitorUI
         /// </summary>
         private void CreateCPU()
         {
-            // Créer un compteur par CPU
-            System.Diagnostics.PerformanceCounterCategory category = new System.Diagnostics.PerformanceCounterCategory("Processeur");
-            SimpleCounter mainCounter = null;
-            List<SimpleCounter> counters = new List<SimpleCounter>();
-            foreach (string instance in category.GetInstanceNames().OrderBy(s => s))
-            {
-                System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("Processeur", "% Temps Processeur", instance, true);
-
-                SimpleCounter counter = new KnownMaxPerformanceCounter(new PerformanceCounter(pc), new StaticPerformanceCounter(100));
-
-                if (instance == "_Total")
-                {
-                    mainCounter = counter;
-                }
-                else
-                {
-                    counters.Add(counter);
-                }
-            }
-            //counters.Add(new MostConsumingProcessPerformanceCounter());
-
-            UserControlCounter userControlCounter = AddCounterControl(new SubPerformanceCounter(mainCounter, counters),
+            AddCounterControl(CounterFactory.CreateCPUCounter(),
                 Color.Goldenrod,
                 "userControlCounterCPU",
                 "CPU");
@@ -225,20 +177,10 @@ namespace WindowsMonitorUI
         /// </summary>
         private void CreateNetwork()
         {
-            // Créer les contrôles pour chaque interface réseau
-            System.Diagnostics.PerformanceCounterCategory category = new System.Diagnostics.PerformanceCounterCategory("Interface réseau");
-            List<SimpleCounter> counters = new List<SimpleCounter>();
-            foreach (string instance in category.GetInstanceNames().OrderBy(s => s))
-            {
-                System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("Interface réseau", "Total des octets/s", instance, true);
-                PerformanceCounter counter = new PerformanceCounter(pc);
-                counters.Add(new PerformanceCounter(pc));
-            }
-
-            UserControlCounter userControlCounter = AddCounterControl(new SumPerformanceCounter(counters),
+            UserControlCounter userControlCounter = AddCounterControl(CounterFactory.CreateNetworkCounter(),
                 Color.Gold,
                 "userControlCounterNetwork",
-                string.Format("Réseau ({0} interfaces)", counters.Count));
+                string.Format("Network ({0} interfaces)", /* TODO counters.Count */0));
             userControlCounter.CounterHistory.Counter.DisplayCoef = 1F / 1024F;
             userControlCounter.CounterHistory.Counter.Unit = "Ko";
         }
@@ -246,44 +188,10 @@ namespace WindowsMonitorUI
         /// <summary>
         /// Création d'un compteur spécifique
         /// </summary>
-        private void CreateSpecific(string machineName, string categoryName, string counterName, string instanceName)
+        private void CreateSpecific(string counterString)
         {
-            System.Diagnostics.PerformanceCounterCategory category = new System.Diagnostics.PerformanceCounterCategory(categoryName, machineName);
-
-            IEnumerable<System.Diagnostics.PerformanceCounter> counters = new System.Diagnostics.PerformanceCounter[] { };
-
-            if (counterName == "#ALL#" && instanceName == "#ALL#")
-            {
-                foreach (string instance in category.GetInstanceNames().OrderBy(s => s))
-                {
-                    counters = counters.Concat(category.GetCounters(instance));
-                }
-            }
-            else if (counterName == "#ALL#")
-            {
-                if (string.IsNullOrEmpty(instanceName))
-                {
-                    counters = category.GetCounters();
-                }
-                else
-                {
-                    counters = category.GetCounters(instanceName);
-                }
-            }
-            else if (instanceName == "#ALL#")
-            {
-                foreach (string instance in category.GetInstanceNames().OrderBy(s => s))
-                {
-                    counters = counters.Concat(new System.Diagnostics.PerformanceCounter[] { new System.Diagnostics.PerformanceCounter(categoryName, counterName, instance, machineName) });
-                }
-            }
-            else
-            {
-                counters = new System.Diagnostics.PerformanceCounter[] { new System.Diagnostics.PerformanceCounter(categoryName, counterName, instanceName, machineName) };
-            }
-
             // Création des contrôles
-            foreach (System.Diagnostics.PerformanceCounter counter in counters)
+            foreach (System.Diagnostics.PerformanceCounter counter in CounterFactory.CreateCountersFromString(counterString))
             {
                 AddCounterControl(new PerformanceCounter(counter),
                     Color.LightSteelBlue,
@@ -315,7 +223,7 @@ namespace WindowsMonitorUI
             return userControlCounter;
         }
 
-        private new void Refresh()
+        private void RefreshDisk()
         {
             DeleteDisk();
             CreateDisk();
@@ -331,7 +239,7 @@ namespace WindowsMonitorUI
                 }
                 catch (Exception ex)
                 {
-                    // TODO: implémenter le traitement de cette exception
+                    // TODO
                 }
 
                 counter.UpdateDisplay();
@@ -374,7 +282,7 @@ namespace WindowsMonitorUI
             }
             else if (e.ClickedItem == refreshToolStripMenuItem)
             {
-                Refresh();
+                RefreshDisk();
             }
             else if (e.ClickedItem == horizontalToolStripMenuItem)
             {
@@ -392,12 +300,12 @@ namespace WindowsMonitorUI
 
         void driveDetector_DeviceArrived(object sender, Dolinay.DriveDetectorEventArgs e)
         {
-            Refresh();
+            RefreshDisk();
         }
 
         void driveDetector_DeviceRemoved(object sender, Dolinay.DriveDetectorEventArgs e)
         {
-            Refresh();
+            RefreshDisk();
         }
     }
 }
