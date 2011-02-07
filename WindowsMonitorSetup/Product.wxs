@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define projectName= "WindowsMonitor"?>
 <?define author= "Christophe LEITIENNE"?>
-<?define version= "1.0.2.0"?>
-<?define productCode= "{3A791D16-DE24-41E6-A4B8-BBA6FA14D7EE}"?>
-<!-- changes with each version -->
-<?define upgradeCode= "{52DD73FE-C6D7-4253-A752-ABC0DBD3046E}"?>
-<!-- doesn't change -->
+<?define version= "1.0.3.0"?>
+<?define productCode= "*"?><!-- changes with each version -->
+<?define upgradeCode= "{52DD73FE-C6D7-4253-A752-ABC0DBD3046E}"?><!-- doesn't change -->
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
