@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define projectName= "WindowsMonitor"?>
 <?define author= "Christophe LEITIENNE"?>
-<?define version= "1.0.3.0"?>
+<?define version= "1.0.5.0"?>
 <?define productCode= "*"?><!-- changes with each version -->
 <?define upgradeCode= "{52DD73FE-C6D7-4253-A752-ABC0DBD3046E}"?><!-- doesn't change -->
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="$(var.productCode)" Name="$(var.projectName)" Language="1033" Version="$(var.version)" Manufacturer="$(var.author)" UpgradeCode="$(var.upgradeCode)">
+  <Product Id="$(var.productCode)" Name="$(var.projectName) $(var.version)" Language="1033" Version="$(var.version)" Manufacturer="$(var.author)" UpgradeCode="$(var.upgradeCode)">
     <Package InstallerVersion="300" Compressed="yes" />
 
     <!-- Force close application on uninstall -->
@@ -42,6 +42,8 @@
       <Directory Id="ProgramMenuFolder">
         <Directory Id="ApplicationProgramsFolder" Name="$(var.projectName)"/>
       </Directory>
+      <Directory Id="StartupFolder">
+      </Directory>
     </Directory>
 
     <DirectoryRef Id="INSTALLLOCATION">
@@ -50,16 +52,6 @@
         <File Id="WindowsMonitor.exe.config" Source="$(var.WindowsMonitorUI.TargetDir)WindowsMonitor.exe.config"/>
         <File Id="settings.xml" Source="$(var.WindowsMonitorUI.TargetDir)settings.xml"/>
         <File Id="WindowsMonitorLib.dll" Source="$(var.WindowsMonitorUI.TargetDir)WindowsMonitorLib.dll"/>
-      </Component>
-
-      <!-- Auto-start via Registry -->
-      <Component Id="ApplicationAutostart" Guid="{FB193EAA-AEA6-4FD5-A8F5-C5ABA04D4A19}">
-        <Registry Id="MerAs.rst" Root="HKMU" Action="write"
-                      Key="Software\Microsoft\Windows\CurrentVersion\Run"
-                      Name="$(var.projectName)"
-                      Value="[INSTALLLOCATION]WindowsMonitor.exe"
-                      Type="string" />
-        <Condition>AUTOSTART_VIA_REGISTRY</Condition>
       </Component>
     </DirectoryRef>
     
@@ -77,6 +69,19 @@
                   Arguments="/x [ProductCode]"/>
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
         <RegistryValue Root="HKCU" Key="Software\$(var.author)\$(var.projectName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Auto-start -->
+    <DirectoryRef Id="StartupFolder">
+      <Component Id="ApplicationAutostart" Guid="{FB59D880-1D49-46B8-9C04-B5D05036034E}">
+        <Shortcut Id="ApplicationStartupShortcut"
+                  Name="$(var.projectName)"
+                  Description="$(var.projectName)"
+                  Target="[INSTALLLOCATION]WindowsMonitor.exe"
+                  WorkingDirectory="INSTALLLOCATION" />
+        <Condition>AUTOSTART</Condition>
+        <RegistryValue Root="HKCU" Key="Software\$(var.author)\$(var.projectName)" Name="autostartinstalled" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
 
@@ -119,7 +124,7 @@
         Impersonate="yes" />
 
     <!-- Property containing autostart flag -->
-    <Property Id="AUTOSTART_VIA_REGISTRY">1</Property>
+    <Property Id="AUTOSTART">1</Property>
     
   </Product>
 </Wix>
