@@ -1,0 +1,45 @@
+﻿<?xml version="1.0"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+	    <DirectoryRef Id="INSTALLLOCATION">
+	      <Component Id="ProductComponent" Guid="{30D3F946-DA4B-4cb4-9B65-717B87BCFB93}">
+	        <File Id="WindowsMonitor.exe" Source="$(var.WindowsMonitorUI.TargetPath)" KeyPath="yes"/>
+	        <File Id="WindowsMonitor.exe.config" Source="$(var.WindowsMonitorUI.TargetDir)WindowsMonitor.exe.config"/>
+	        <File Id="settings.xml" Source="$(var.WindowsMonitorUI.TargetDir)settings.xml"/>
+	        <File Id="WindowsMonitorLib.dll" Source="$(var.WindowsMonitorUI.TargetDir)WindowsMonitorLib.dll"/>
+		    <File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
+	      </Component>
+	    </DirectoryRef>
+	    
+	    <DirectoryRef Id="ApplicationProgramsFolder">
+	      <Component Id="ApplicationShortcut" Guid="{33B334C7-1609-46e9-AA4E-32B244957CB3}">
+	        <Shortcut Id="ApplicationStartMenuShortcut"
+	                  Name="!(wix.ProjectName)"
+	                  Description="!(wix.ProjectName)"
+	                  Target="[INSTALLLOCATION]WindowsMonitor.exe"
+	                  WorkingDirectory="INSTALLLOCATION"/>
+	        <Shortcut Id="UninstallProduct"
+	                  Name="Uninstall !(wix.ProjectName)"
+	                  Description="Uninstalls !(wix.ProjectName)"
+	                  Target="[System64Folder]msiexec.exe"
+	                  Arguments="/x [ProductCode]"/>
+	        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+	        <RegistryValue Root="HKCU" Key="Software\!(wix.Author)\!(wix.ProjectName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+	      </Component>
+	    </DirectoryRef>
+	
+	    <!-- Auto-start -->
+	    <DirectoryRef Id="StartupFolder">
+	      <Component Id="ApplicationAutostart" Guid="{FB59D880-1D49-46B8-9C04-B5D05036034E}">
+	        <Shortcut Id="ApplicationStartupShortcut"
+	                  Name="!(wix.ProjectName)"
+	                  Description="!(wix.ProjectName)"
+	                  Target="[INSTALLLOCATION]WindowsMonitor.exe"
+	                  WorkingDirectory="INSTALLLOCATION" />
+	        <Condition>AUTOSTART</Condition>
+	        <RegistryValue Root="HKCU" Key="Software\!(wix.Author)\!(wix.ProjectName)" Name="autostartinstalled" Type="integer" Value="1" KeyPath="yes"/>
+	      </Component>
+	    </DirectoryRef>
+
+	</Fragment>
+</Wix>

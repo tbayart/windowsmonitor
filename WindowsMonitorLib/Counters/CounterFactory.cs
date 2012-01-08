@@ -20,8 +20,25 @@ namespace WindowsMonitorLib.Counters
             {
                 if (instance == "_Total") { continue; }
 
+                List<SimpleCounter> subCounterslist = new List<SimpleCounter>();
+				System.Diagnostics.PerformanceCounterCategory subCounterCategory = new System.Diagnostics.PerformanceCounterCategory("LogicalDisk");
+	            foreach (string subCounterInstance in subCounterCategory .GetInstanceNames().OrderBy(s => s))
+	            {
+	                if (subCounterInstance == "_Total") { continue; }
+	                if (!instance.Contains(subCounterInstance)) { continue; }
+	
+	                System.Diagnostics.PerformanceCounter subPc = new System.Diagnostics.PerformanceCounter("LogicalDisk", "% Idle Time", subCounterInstance , true);
+	                subCounterslist.Add(new ReversePerformanceCounter(new PerformanceCounter(subPc), new StaticPerformanceCounter(100)));
+	            }
+
                 System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("PhysicalDisk", "% Idle Time", instance, true);
-                list.Add(new ReversePerformanceCounter(new PerformanceCounter(pc), new StaticPerformanceCounter(100)));
+//                list.Add(new ReversePerformanceCounter(new PerformanceCounter(pc), new StaticPerformanceCounter(100)));
+				list.Add(
+					new SubPerformanceCounter(
+						new ReversePerformanceCounter(
+							new PerformanceCounter(pc),
+							new StaticPerformanceCounter(100)),
+						subCounterslist));
             }
 
             return list;
@@ -74,7 +91,29 @@ namespace WindowsMonitorLib.Counters
 
             return new SubPerformanceCounter(mainCounter, counters);
         }
+	
+		/// <summary>
+        /// Creates CPU percentage of max frequency counter
+        /// </summary>
+        public static SimpleCounter CreateCPUFrequencyCounter()
+        {
+            // Créer un compteur par CPU
+            System.Diagnostics.PerformanceCounterCategory category = new System.Diagnostics.PerformanceCounterCategory("ProcessorPerformance");
+            SimpleCounter mainCounter = null;
+            List<SimpleCounter> counters = new List<SimpleCounter>();
+            foreach (string instance in category.GetInstanceNames().OrderBy(s => s))
+            {
+                System.Diagnostics.PerformanceCounter pc = new System.Diagnostics.PerformanceCounter("ProcessorPerformance", "percentage", instance, true);
 
+                SimpleCounter counter = new KnownMaxPerformanceCounter(new PerformanceCounter(pc), new StaticPerformanceCounter(100));
+
+                counters.Add(counter);
+            }
+
+            mainCounter = new SumPerformanceCounter(counters);
+            return new SubPerformanceCounter(mainCounter, counters);
+        }
+        
         /// <summary>
         /// Creates network counter
         /// </summary>

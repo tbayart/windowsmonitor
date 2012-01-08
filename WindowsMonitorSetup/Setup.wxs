@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="!(wix.ProductCode)"
+        Name="!(wix.ProjectName) !(wix.Version)"
+		Language="1033"
+		Version="1.1.0.0"
+		Manufacturer="!(wix.Author)"
+		UpgradeCode="!(wix.UpgradeCode)">
+    <Package InstallerVersion="300" Compressed="yes" />
+
+  	<WixVariable Id="ProjectName" Value="WindowsMonitor" />
+	<WixVariable Id="Author" Value="Christophe LEITIENNE" />
+  	<WixVariable Id="Version" Value="1.1.0.0" />
+  	<WixVariable Id="ProductCode" Value="*" /> <!-- changes with each version -->
+  	<WixVariable Id="UpgradeCode" Value="{52DD73FE-C6D7-4253-A752-ABC0DBD3046E}" /> <!-- doesn't change -->
+
+
+    <!-- Force close application on uninstall -->
+    <util:CloseApplication Id="CloseApplication"
+                  CloseMessage="yes"
+                  Target="WindowsMonitor.exe" />
+
+    <!-- Detect previous versions -->
+    <Upgrade Id="!(wix.UpgradeCode)">
+      <UpgradeVersion Minimum="1.0.0"
+                      IncludeMinimum="yes"
+                      Maximum="!(wix.Version)"
+                      Property="OLDERVERSIONBEINGUPGRADED" />
+    </Upgrade>
+	<!--
+		Source media for the installation. 
+			Specifies a single cab file to be embedded in the installer's .msi. 
+	-->
+	<Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
+	
+	<!-- Installation directory and files are defined in Files.wxs -->
+	<Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="!(wix.ProjectName)" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="!(wix.ProjectName)" />
+      </Directory>
+      <Directory Id="StartupFolder">
+      </Directory>
+    </Directory>
+
+
+
+    <!-- Features -->
+	<Feature Id="Complete"
+	         Title="!(wix.ProjectName)"
+	         Description="!(wix.ProjectName)"
+	         Level="1">
+      <ComponentRef Id="ProductComponent" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="ApplicationAutostart" />
+	</Feature>
+
+    <!-- UI: let user choose install dir, let user decide if he wants to launch application at end of install -->
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <Publish Dialog="ExitDialog"
+          Control="Finish"
+          Event="DoAction"
+          Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+    </UI>
+
+    <!-- Remove previous version -->
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize"/>
+    </InstallExecuteSequence>
+
+    <!-- Avoid installing over newer version -->
+    <Condition Message="A later version of [ProductName] is already installed. Setup will now exit.">
+      NOT NEWERVERSIONDETECTED OR Installed
+    </Condition>
+
+    <!-- Property containing install location choosed by user -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+
+    <!-- Property containing launch app checkbox status -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch !(wix.ProjectName)" />
+
+    <Property Id="WixShellExecTarget" Value="[#WindowsMonitor.exe]" />
+    <CustomAction Id="LaunchApplication"
+        BinaryKey="WixCA"
+        DllEntry="WixShellExec"
+        Impersonate="yes" />
+
+    <!-- Property containing autostart flag -->
+    <Property Id="AUTOSTART">1</Property>
+	    
+	</Product>
+</Wix>

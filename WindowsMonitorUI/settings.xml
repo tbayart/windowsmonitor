@@ -5,12 +5,13 @@
   <Monitor type="predefined" value="VirtualMemory" />
   <Monitor type="predefined" value="Network" />
   <Monitor type="predefined" value="Disk" />
-<!-- Examples
-    <Monitor value="\\.\Processeur(_Total)\% durée C1"/>
-    <Monitor value="\\.\Processeur(_Total)\% durée C2"/>
-    <Monitor value="\\.\Processeur(_Total)\% durée C3"/>
-    <Monitor value="\\.\Mémoire\% Octets dédiés utilisés"/>
-    <Monitor value="\\.\ProcessorPerformance(#ALL#)\#ALL#"/>
-    <Monitor value="\\.\Processeur(#ALL#)\Interruptions/s"/>
+  <!--<Monitor type="predefined" value="CPUFrequency" />-->
+	<!-- Examples
+    <Monitor type="perfmon" value="\\.\Processeur(_Total)\% durée C1"/>
+    <Monitor type="perfmon" value="\\.\Processeur(_Total)\% durée C2"/>
+    <Monitor type="perfmon" value="\\.\Processeur(_Total)\% durée C3"/>
+    <Monitor type="perfmon" value="\\.\Mémoire\% Octets dédiés utilisés"/>
+    <Monitor type="perfmon" value="\\.\ProcessorPerformance(#ALL#)\#ALL#"/>
+    <Monitor type="perfmon" value="\\.\Processeur(#ALL#)\Interruptions/s"/>
     -->
 </Monitor>

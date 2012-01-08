@@ -78,7 +78,7 @@ namespace WindowsMonitorLib.Counters
         }
 
         public override string Unit
-        {
+	        {
             get { return unit; }
             set { unit = value; }
         }
@@ -113,7 +113,15 @@ namespace WindowsMonitorLib.Counters
         {
             StringBuilder name = new StringBuilder();
 
-            name.AppendFormat("\\\\{0}\\{1}", pc.MachineName, pc.CategoryName);
+            if (pc.MachineName != ".")
+            {
+	            name.AppendFormat("\\\\{0}\\{1}", pc.MachineName, pc.CategoryName);
+            }
+            else
+            {
+            	name.AppendFormat("{0}", pc.CategoryName);
+            }
+            
             if (pc.InstanceName != null)
             {
                 name.AppendFormat("({0})", pc.InstanceName);
@@ -173,7 +181,12 @@ namespace WindowsMonitorLib.Counters
 
         public override string Help
         {
-            get { return pc.Help + " / " + pcMax.Help; }
+            get { 
+        		if (pcMax is StaticPerformanceCounter && pcMax.Value == 100)
+        			return pc.Help + "%";
+        		else
+        			return pc.Help + " / " + pcMax.Help; 
+        	}
         }
 
         public override float Value
@@ -250,7 +263,12 @@ namespace WindowsMonitorLib.Counters
 
         public override string Help
         {
-            get { return pc.Help + " / " + pcMax.Help; }
+            get { 
+        		if (pcMax is StaticPerformanceCounter && pcMax.Value == 100)
+        			return pc.Help + "%";
+        		else
+        			return pc.Help + " / " + pcMax.Help; 
+        	}
         }
 
         public override float Value
@@ -320,10 +338,16 @@ namespace WindowsMonitorLib.Counters
             get
             {
                 StringBuilder sb = new StringBuilder();
-                foreach (SimpleCounter counter in subCounters)
+                
+                // Aide du compteur principal
+                sb.Append(counter.Help);
+                sb.AppendLine();
+
+        		// Aide des sous-compteurs
+                foreach (SimpleCounter subCounter in subCounters)
                 {
                     if (sb.Length > 0) { sb.AppendLine(); }
-                    sb.AppendFormat("{0}: {1}{2}", counter.Help, Math.Round(counter.Value * counter.DisplayCoef, 1), counter.Unit);
+                    sb.AppendFormat("{0}: {1}{2}", subCounter.Help, Math.Round(subCounter.Value * subCounter.DisplayCoef, 1), subCounter.Unit);
                 }
 
                 return sb.ToString();

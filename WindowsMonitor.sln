@@ -1,11 +1,12 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.1.0.8000
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsMonitorLib", "WindowsMonitorLib\WindowsMonitorLib.csproj", "{82FC5246-3FDB-477F-9EDC-C2729CA1EC5B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsMonitorUI", "WindowsMonitorUI\WindowsMonitorUI.csproj", "{098642BA-E79C-4D50-BF51-ACC40D48C77F}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WindowsMonitorSetup", "WindowsMonitorSetup\WindowsMonitorSetup.wixproj", "{D51900DF-EABE-4905-B7B7-1469C2784B88}"
+Project("{CFEE4113-1246-4D54-95CB-156813CB8593}") = "WindowsMonitorSetup", "WindowsMonitorSetup\WindowsMonitorSetup.wixproj", "{d51900df-eabe-4905-b7b7-1469c2784b88}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -41,16 +42,26 @@ Global
 		{098642BA-E79C-4D50-BF51-ACC40D48C77F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{098642BA-E79C-4D50-BF51-ACC40D48C77F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{098642BA-E79C-4D50-BF51-ACC40D48C77F}.Release|x86.ActiveCfg = Release|Any CPU
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|x86.ActiveCfg = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Debug|Any CPU.Build.0 = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Debug|x86.Build.0 = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Debug|x86.ActiveCfg = Debug|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Release|Any CPU.Build.0 = Release|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Release|Any CPU.ActiveCfg = Release|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Release|Mixed Platforms.Build.0 = Release|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Release|x86.Build.0 = Release|x86
+		{d51900df-eabe-4905-b7b7-1469c2784b88}.Release|x86.ActiveCfg = Release|x86
 		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|x86.Build.0 = Debug|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|Any CPU.ActiveCfg = Release|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|Mixed Platforms.Build.0 = Release|x86
-		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|x86.ActiveCfg = Release|x86
+		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|x86.ActiveCfg = Debug|x86
 		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|x86.Build.0 = Release|x86
+		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|x86.ActiveCfg = Release|x86
+		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D51900DF-EABE-4905-B7B7-1469C2784B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
