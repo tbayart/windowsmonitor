@@ -86,7 +86,6 @@ namespace WindowsMonitorUI
             {
                 toolTip.ToolTipTitle = counterHistory.Counter.Name;
                 
-                foreach(Counter c in this.CounterHistory.Counter.
                 toolTip.SetToolTip(this, counterHistory.Counter.Help + "\n" + Text);
             }
             catch (Exception ex)

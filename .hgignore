@@ -1,0 +1,6 @@
+syntax: glob
+*/bin/*
+syntax: glob
+*/obj/*
+syntax: glob
+*.suo
