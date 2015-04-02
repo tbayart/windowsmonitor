@@ -1,7 +1,7 @@
 # windowsmonitor
 Automatically exported from code.google.com/p/windowsmonitor
 
-Small gadget that monitors and displays graphs of windows performance counters like memory, cpu load or disk load. 
+Small gadget that monitors and displays graphs of windows performance counters like memory, cpu load or disk load.
 ![https://raw.githubusercontent.com/tbayart/windowsmonitor/master/ExampleHorizontal.png](https://raw.githubusercontent.com/tbayart/windowsmonitor/master/ExampleHorizontal.png)
 
 Features
