@@ -1,6 +1,6 @@
 ### Windows Monitor ###
 Small gadget that monitors and displays graphs of windows performance counters like memory, cpu load or disk load.
-![http://windowsmonitor.googlecode.com/svn/images/ExampleHorizontal.png](http://windowsmonitor.googlecode.com/svn/images/ExampleHorizontal.png)
+![https://raw.githubusercontent.com/tbayart/windowsmonitor/master/ExampleHorizontal.png](https://raw.githubusercontent.com/tbayart/windowsmonitor/master/ExampleHorizontal.png)
 
 ### Features ###
   * Default counters
